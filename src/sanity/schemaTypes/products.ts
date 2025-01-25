@@ -18,7 +18,7 @@ export default defineType({
         {
         name: 'price',
         title: 'Price',
-        type: 'number',
+        type: 'string',
         },
         {
         name: 'description',
