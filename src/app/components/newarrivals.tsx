@@ -44,16 +44,7 @@ const NewArrival = () => {
   }, []);
 
   // Function to calculate the discount percentage
-  const calculateDiscount = (price: string, priceWas: string) => {
-    if (priceWas) {
-      const discount =
-        ((parseFloat(priceWas.replace("$", "")) - parseFloat(price.replace("$", ""))) /
-          parseFloat(priceWas.replace("$", ""))) *
-        100;
-      return Math.round(discount);
-    }
-    return 0;
-  };
+  
 
   const handleViewMore = () => {
     // Load next 4 products
@@ -65,10 +56,10 @@ const NewArrival = () => {
     }
   };
 
-  // Function to truncate text to a maximum length of 20 characters
-  const truncateText = (text: string, maxLength: number) => {
-    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-  };
+  // // Function to truncate text to a maximum length of 20 characters
+  // const truncateText = (text: string, maxLength: number) => {
+  //   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  // };
 
   return (
     <div id="newArrival">
@@ -117,7 +108,7 @@ const NewArrival = () => {
                 {item.discountPercent && (
                   <>
                     <span className="text-sm line-through text-gray-500">
-                      {item.discountPercent}
+                      {item.discountPercent} % OFF
                     </span>
                   
                   </>

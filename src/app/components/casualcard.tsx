@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { IoMdStar } from "react-icons/io";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { ProductsData } from "../components/allproductdata"
 import { urlFor } from "@/sanity/lib/image";
 import { allproducts } from "@/sanity/lib/queries";
 import { client } from "@/sanity/lib/client";

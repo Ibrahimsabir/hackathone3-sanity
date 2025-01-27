@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { IoMdStar } from "react-icons/io";
 import Link from "next/link";
-import { TopSell } from "../components/allproductdata";
 import { urlFor } from "@/sanity/lib/image";
 import { client } from "@/sanity/lib/client";
 import { topseller } from "@/sanity/lib/queries";
