@@ -1,11 +1,11 @@
-import { defineQuery } from "next-sanity";
 import { groq } from "next-sanity";
-export const allproducts = groq`*[_type == "product"]{
+
+export const allproducts = groq`*[_type == "products"]{
     _id,
     name,
     description,
     price,
-    discountPercentage,
+    discountPercent,
     priceWithoutDiscount,
     rating,
     color,
@@ -13,15 +13,42 @@ export const allproducts = groq`*[_type == "product"]{
     isnew,
 }`;
 
-export const newarrivals = groq`*[_type == "product" && isnew]{
+export const newarrivals = groq`*[_type == "products" && isnew]{
      _id,
     name,
     description,
     price,
-    discountpercentage,
+    discountPercent,
     priceWithoutDiscount,
     rating,
     color,
     isnew,
     "imageUrl": image.asset->url,
     }`
+
+    
+    export const productyoulike = groq`*[_type == "products" && (discountPercent > 10)]{
+        _id,
+       name,
+       description,
+       price,
+       discountPercent,
+       priceWithoutDiscount,
+       rating,
+       color,
+       isnew,
+       "imageUrl": image.asset->url,
+       }`
+
+       export const topseller = groq`*[_type == "products" && rating > 4]{
+        _id,
+       name,
+       description,
+       price,
+       discountPercent,
+       priceWithoutDiscount,
+       rating,
+       color,
+       isnew,
+       "imageUrl": image.asset->url,
+       }`

@@ -1,21 +1,36 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { IoMdStar } from "react-icons/io";
 import Link from "next/link";
 import { TopSell } from "../components/allproductdata";
+import { urlFor } from "@/sanity/lib/image";
+import { client } from "@/sanity/lib/client";
+import { topseller } from "@/sanity/lib/queries";
 
-type TopSellerData = {
-  id: number;
-  image: string;
-  title: string;
+type Product = {
+  _id: number;
+  name: string;
   price: string;
-  priceWas: string;
+  discountPercent: number;
+  priceWithoutDiscount: string;
+  description: string;
   rating: number;
+  imageUrl: string;
+  isnew: boolean;
 };
 
 const TopSeller = () => {
-  const card: TopSellerData[] = TopSell;
+  const [product,setProduct] = useState<Product[]>([]);
+
+    useEffect(() => {
+      async function fetchproduct() {
+        const fetchedproduct = await client.fetch(topseller); // Fetch products using the query
+        setProduct(fetchedproduct); // Update state with fetched data
+        console.log(fetchedproduct);
+      }
+      fetchproduct();
+    }, []);
 
   const [visibleProducts, setVisibleProducts] = useState(4); // Manage the number of visible products
   const [noMoreProducts, setNoMoreProducts] = useState(false); // To show "No more products" message
@@ -35,10 +50,10 @@ const TopSeller = () => {
 
   const handleViewMore = () => {
     // If there are fewer than 4 products left, load all remaining products
-    if (visibleProducts + 4 <= card.length) {
+    if (visibleProducts + 4 <= product.length) {
       setVisibleProducts(visibleProducts + 4);
     } else {
-      setVisibleProducts(card.length); // Load all remaining products
+      setVisibleProducts(product.length); // Load all remaining products
       setNoMoreProducts(true); // Show "No more products" message
     }
   };
@@ -57,22 +72,22 @@ const TopSeller = () => {
 
       {/* Card Section */}
       <div className="w-[90%] border-b-2 border-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-auto">
-        {card.slice(0, visibleProducts).map((item) => (
-          <Link href={`/testdetail/${item.id}`} key={item.id} rel="noopener">
+        {product.slice(0, visibleProducts).map((item) => (
+          <Link href={`/testdetail/${item._id}`} key={item._id} rel="noopener">
             <div
-              key={item.id}
+              key={item._id}
               className="bg-white rounded-lg p-2 hover:shadow-lg transition-shadow flex flex-col justify-between"
             >
               <div className="relative w-full h-[300px] rounded-[20px] overflow-hidden">
                 <Image
-                  src={item.image}
-                  alt={item.title}
+                  src={urlFor(item.imageUrl).url()}
+                  alt={item.name}
                   layout="fill"
                   objectFit="cover"
                   className="rounded-md"
                 />
               </div>
-              <h2 className="text-sm font-semibold mt-2">{item.title}</h2>
+              <h2 className="text-sm font-semibold mt-2">{item.name}</h2>
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex text-yellow-500">
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -90,13 +105,13 @@ const TopSeller = () => {
               </div>
               <div className="mt-1 flex items-center gap-2">
                 <span className="text-lg font-bold text-gray-800">{item.price}</span>
-                {item.priceWas && (
+                {item.discountPercent && (
                   <>
                     <span className="text-sm line-through text-gray-500">
-                      {item.priceWas}
+                      {item.discountPercent}*{item.price}/100
                     </span>
                     <button className="bg-pink-100 text-red-600 text-xs py-1 px-2 rounded-full">
-                      {calculateDiscount(item.price, item.priceWas)}% OFF
+                      {calculateDiscount(item.price, item.price)}% OFF
                     </button>
                   </>
                 )}

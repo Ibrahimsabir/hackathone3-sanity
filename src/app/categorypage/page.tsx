@@ -86,38 +86,7 @@ const CategoryPage = () => {
  <div className="w-full sm:w-[925px] max-h-[11800px] p-2">
         <CasualCard />
       </div> 
-        {/* Product Grid */}
-        {/* <div className="w-full sm:w-3/4 p-4">
-          <h1 className="text-[32px] font-bold mb-4">Casual</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[
-              { name: "Gradient Graphic T-Shirt", price: "$145", img: "/image19.png" },
-              { name: "Polo with Tipping Details", price: "$180", img: "/image20.png" },
-              { name: "Black Striped T-Shirt", price: "$120", img: "/image21.png" },
-              { name: "Skinny Fit Jeans", price: "$240", img: "/image22.png" },
-              { name: "Checkered Shirt", price: "$180", img: "/image23.png" },
-              { name: "Sleeve Striped T-Shirt", price: "$130", img: "/image24.png" },
-            ].map((item) => (
-              <div key={item.name} className="border p-4 rounded">
-                <Image
-                  src={item.img}
-                  alt={item.name}
-                  width={200}
-                  height={200}
-                  className="h-[298px] w-full rounded-[20px] bg-[#F0EEED] object-cover mb-4"
-                />
-                <h3 className="font-bold mt-2">{item.name}</h3>
-                <div className='flex items-center'>
-                  <FaStar className='text-yellow-400' />
-                  <FaStar className='text-yellow-400' />
-                  <FaStar className='text-yellow-400' />
-                  <FaStar className='text-yellow-400' />
-                </div>
-                <p className="text-[24px] font-bold">{item.price}</p>
-              </div>
-            ))}
-          </div>
-        </div> */}
+        
       </div>
 
      

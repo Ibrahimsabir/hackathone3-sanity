@@ -1,34 +1,46 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { IoMdStar } from "react-icons/io";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { ProductsData } from "../components/allproductdata"
+import { urlFor } from "@/sanity/lib/image";
+import { allproducts } from "@/sanity/lib/queries";
+import { client } from "@/sanity/lib/client";
 
-type CasualCardData = {
-  id: number;
-  image: string;
-  title: string;
+type Product = {
+  _id: number;
+  name: string;
   price: string;
-  priceWas: string;
+  discountPercent: number;
+  priceWithoutDiscount: string;
+  description: string;
   rating: number;
+  imageUrl: string;
+  isnew: boolean;
 };
 
 const CasualCard = () => {
   // Filter products based on "casual" and "formal" categories
-  const card: CasualCardData[] = ProductsData.filter(product =>
-    product.category.toLowerCase() === "formal" || product.category.toLowerCase() === "casual"
-  );
+  const [product,setproduct] = useState<Product[]>([]);
+
+  useEffect(()=>{
+    async function fetchproduct(){
+     const fetchedproduct = await client.fetch(allproducts)
+     setproduct(fetchedproduct);
+    }
+    fetchproduct();
+  },[])
 
   // Pagination setup
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 9; // Display 6 cards per page (2 columns and 3 rows on mobile)
-  const totalPages = Math.ceil(card.length / cardsPerPage); // Total number of pages
+  const totalPages = Math.ceil(product.length / cardsPerPage); // Total number of pages
 
   // Get the cards for the current page
   const startIndex = (currentPage - 1) * cardsPerPage;
-  const currentCards = card.slice(startIndex, startIndex + cardsPerPage);
+  const currentCards = product.slice(startIndex, startIndex + cardsPerPage);
 
   // Function to calculate the discount percentage
   const calculateDiscount = (price: string, priceWas: string) => {
@@ -68,12 +80,17 @@ const CasualCard = () => {
       {/* Product Cards */}
       <div className="w-[90%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {currentCards.map((item) => (
-          <Link href={`/testdetail/${item.id}`} key={item.id}>
+          <Link href={`/testdetail/${item._id}`} key={item._id}>
             <div className="bg-white rounded-lg p-4 hover:scale-105 hover:shadow-xl transition-all duration-300">
-              <div className="relative w-72 h-72 rounded-md overflow-hidden">
-                <Image src={item.image} alt={item.title} layout="fill" objectFit="cover" className="w-48 h-48 rounded-md" />
+              <div className="relative w-48 h-48 rounded-md overflow-hidden">
+                <Image 
+                     src={urlFor(item.imageUrl).url()}
+                     alt={item.name} 
+                     layout="fill" 
+                     objectFit="cover" 
+                     className=" rounded-md" />
               </div>
-              <h2 className="text-sm font-semibold mt-2">{item.title}</h2>
+              <h2 className="text-sm font-semibold mt-2">{item.name}</h2>
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex text-yellow-500">
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -84,11 +101,11 @@ const CasualCard = () => {
               </div>
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-lg font-bold text-gray-800">{item.price}</span>
-                {item.priceWas && (
+                {item.discountPercent && (
                   <>
-                    <span className="text-sm line-through text-gray-500">{item.priceWas}</span>
+                    <span className="text-sm line-through text-gray-500">{item.price}</span>
                     <button className="bg-pink-100 text-red-600 text-xs py-1 px-2 rounded-full">
-                      {calculateDiscount(item.price, item.priceWas)}% OFF
+                      {calculateDiscount(item.price, item.price)}% OFF
                     </button>
                   </>
                 )}
