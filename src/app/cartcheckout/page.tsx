@@ -1,28 +1,40 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
-import { AiFillDelete } from "react-icons/ai";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { AiFillDelete } from "react-icons/ai";
 
 export interface Product {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  rating: number;
+  _id: number;
+  name: string;
+  stock: number;
   price: string;
-  priceWas: string;
+  discountPercent: number;
+  priceWithoutDiscount: string;
+  description: string;
+  rating: number;
+  imageUrl: {
+    _type: "image";
+    asset: {
+      _ref: string;
+      _type: "reference";
+    };
+  };
+  isnew: boolean;
+  slug: {
+    _type: "slug";
+    current: string;
+  };
+  category: string;
   color: string;
-  aosDelay: number;
   quantity: number;
 }
 
 const CartPage = () => {
   const [cart, setCart] = useState<Product[]>([]);
 
-  // Fetch cart from localStorage
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
@@ -30,20 +42,16 @@ const CartPage = () => {
     }
   }, []);
 
-  // Remove item from cart
-  const removeFromCart = (id: number) => {
-    const updatedCart = cart.filter((item) => item.id !== id);
+  const removeFromCart = (productId: number) => {
+    const updatedCart = cart.filter((item) => item._id !== productId);
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
-    toast.success("Item removed from cart", {
-      position: "top-center",
-    });
+    toast.success("Item removed from cart");
   };
 
-  // Decrease item quantity in cart
-  const decreaseQuantity = (id: number) => {
+  const decreaseQuantity = (productId: number) => {
     const updatedCart = cart.map((item) =>
-      item.id === id && item.quantity > 1
+      item._id === productId && item.quantity > 1
         ? { ...item, quantity: item.quantity - 1 }
         : item
     );
@@ -51,10 +59,9 @@ const CartPage = () => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  // Increase item quantity in cart
-  const increaseQuantity = (id: number) => {
+  const increaseQuantity = (productId: number) => {
     const updatedCart = cart.map((item) =>
-      item.id === id && item.quantity < 10 // Prevent going over 10 items
+      item._id === productId && item.quantity < item.stock
         ? { ...item, quantity: item.quantity + 1 }
         : item
     );
@@ -62,7 +69,12 @@ const CartPage = () => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  // Calculate total amount
+  const calculateDiscountedPrice = (price: string, discountPercent: number) => {
+    const originalPrice = parseFloat(price.replace("$", ""));
+    const discountAmount = (originalPrice * discountPercent) / 100;
+    return `$${(originalPrice - discountAmount).toFixed(2)}`;
+  };
+
   const totalAmount = cart
     .reduce((total, item) => {
       const price = parseFloat(item.price.replace("$", "").replace(",", ""));
@@ -73,139 +85,110 @@ const CartPage = () => {
   return (
     <div className="container mx-auto py-10 px-4">
       <Toaster />
-      <div className="flex flex-col sm:flex-row mx-auto gap-2 ">
-      <div className="flex flex-col w-[60%] gap-6 items-start bg-white p-4 ">
-      <h1 className="text-3xl sm:text-4xl font-bold mb-6 ml-20 text-gray-600 underline uppercase animate-wobble text-center sm:text-left">
+      
+      <h1 className="text-3xl font-bold text-gray-600 underline text-start mb-6">
         Your Cart
       </h1>
-      <div className="flex flex-col sm:flex-row  gap-6 sm:gap-12">
-        {cart.length === 0 ? (
-          <p className="text-center text-gray-600">Your cart is empty.</p>
-        ) : (
-          <div className="flex flex-col sm:flex-row  border-2 border-gray-300 rounded-3xl p-6 justify-between ml-20">
-            {/* Cart Items */}
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Cart Items Section */}
+        <div className="lg:w-2/3 border-2 border-gray-300 rounded-lg p-6">
+          {cart.length === 0 ? (
+            <p className="text-center text-gray-600">Your cart is empty.</p>
+          ) : (
             <div className="flex flex-col gap-6">
               {cart.map((item) => (
                 <div
-                  key={item.id}
-                  className="flex flex-col sm:flex-row gap-6 sm:gap-12 items-center bg-white p-4 rounded-lg shadow-md"
+                  key={item._id}
+                  className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md"
                 >
-                  <div className="w-20 h-20 sm:w-24 sm:h-24">
-                    <Image
-                      src={item.image || "/images/default-product.jpg"}
-                      alt={item.title}
-                      width={96}
-                      height={96}
-                      className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded"
-                    />
-                  </div>
+                  <Image
+                    src={urlFor(item.imageUrl).url()}
+                    alt={item.name}
+                    width={80}
+                    height={80}
+                    className="rounded"
+                  />
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-800 text-base sm:text-lg">
-                      {item.title.toUpperCase()}
-                    </h3>
-                    <p className="text-base font-medium text-gray-700">
-                      <span className="font-semibold text-lg">
-                        Category : {` `}
+                    <h3 className="font-bold text-gray-800">{item.name}</h3>
+                    <p className="text-gray-700">Category: {item.category}</p>
+                    <p className="text-gray-700">Color: {item.color}</p>
+                    {item.discountPercent > 0 ? (
+                      <div>
+                        <span className="text-lg font-bold text-gray-800">
+                          {calculateDiscountedPrice(
+                            item.price,
+                            item.discountPercent
+                          )}
+                        </span>
+                        <span className="text-md line-through font-bold ml-4 text-red-500">
+                          {item.price}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-lg font-bold text-gray-800">
+                        {item.price}
                       </span>
-                      {item.category}
-                    </p>
-                    <p className="text-base font-medium text-gray-700">
-                      <span className="font-semibold text-lg">
-                        Color : {` `}
-                      </span>
-                      {item.color}
-                    </p>
-                    <p className="font-bold text-gray-800 text-base sm:text-lg">
-                      {item.price}
-                    </p>
+                    )}
                   </div>
-                  <div className="flex flex-col justify-center items-center">
+                  <div className="flex items-center gap-3">
                     <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-red-600 hover:text-red-800 mt-2 sm:mt-0"
+                      onClick={() => decreaseQuantity(item._id)}
+                      className="px-2 bg-gray-200 rounded"
                     >
-                      <AiFillDelete size={24} />
+                      -
                     </button>
-                    <div className="flex items-center border-2 px-3 py-1 border-gray-200 bg-gray-200 rounded-full gap-3 mt-3">
-                      <button
-                        onClick={() => decreaseQuantity(item.id)}
-                        className=" text-2xl font-medium text-gray-800"
-                        disabled={item.quantity <= 1}
-                      >
-                        -
-                      </button>
-                      <span className="text-lg">{item.quantity}</span>
-                      <button
-                        onClick={() => increaseQuantity(item.id)}
-                        className="text-2xl font-medium text-gray-800"
-                      >
-                        +
-                      </button>
-                    </div>
+                    <span>{item.quantity}</span>
+                    <button
+                      onClick={() => increaseQuantity(item._id)}
+                      className="px-2 bg-gray-200 rounded"
+                    >
+                      +
+                    </button>
                   </div>
+                  <button
+                    onClick={() => removeFromCart(item._id)}
+                    className="text-red-600"
+                  >
+                    <AiFillDelete size={24} />
+                  </button>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
         </div>
-      </div>
-        {/* Cart Summary Section */}
-        <div className="flex flex-col w-[40%] gap-6 items-center bg-white p-4 ">
-        
 
-        <div className="bg-white p-4 border-2 border-gray-300 rounded-3xl max-w-xs ml-2 mt-28">
-        <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-600  animate-wobble text-center sm:text-left">Cart Summary</h1> 
-          <div className="space-y-3">
-            {cart.map((item) => {
-              const itemTotal = (
-                parseFloat(item.price.replace("$", "").replace(",", "")) *
-                item.quantity
-              ).toFixed(2);
-              return (
-                <div
-                  key={item.id}
-                  className="flex justify-between items-center gap-4 text-sm"
-                >
-                  <div className="flex items-center ">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 mr-3">
-                      <Image
-                        src={item.image || "/images/default-product.jpg"}
-                        alt={item.title}
-                        width={40}
-                        height={40}
-                        className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-800">
-                        {item.title}
-                      </h3>
-                      <p className="text-gray-600 text-xs">x{item.quantity}</p>
-                    </div>
-                  </div>
-                  <div className="text-gray-800 font-semibold">
-                    ${itemTotal}
-                  </div>
-                  
-                </div>
-                
-              );
-            })}
-      <div className="bg-white p-6 mb-6 mt-6">
-        <div className="flex justify-between items-center text-xl">
-          <span className="font-medium">Total:</span>
-          <span className="text-black font-bold">${totalAmount}</span>
-        </div>
-      </div>
-             <Link href="/checkoutpage">
-          <button className="text-lg font-Satoshi font-medium text-black px-8 py-2 border-2 mt-6 border-gray-200 hover:bg-black hover:text-white rounded-full w-full">
-            Proceed to Checkout
-          </button>
-        </Link>
-              </div>
-            
+        {/* Cart Summary Section */}
+        <div className="lg:w-1/3 border-2 border-gray-300 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-gray-600">Cart Summary</h2>
+          {cart.map((item) => (
+            <div key={item._id} className="flex justify-between items-center gap-2 my-2">
+              <Image
+                src={urlFor(item.imageUrl).url()}
+                alt={item.name}
+                width={40}
+                height={40}
+                className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded"
+              />
+              <span>{item.name} x {item.quantity}</span>
+              <span>
+                ${(
+                  (item.discountPercent > 0
+                    ? parseFloat(item.price.replace("$", "")) * (1 - item.discountPercent / 100)
+                    : parseFloat(item.price.replace("$", ""))) * item.quantity
+                ).toFixed(2)}
+              </span>
+            </div>
+          ))}
+          <div className="flex justify-between text-xl font-bold mt-4">
+            <span>Total:</span>
+            <span>${totalAmount}</span>
           </div>
+          <Link href="/checkoutpage">
+            <button className="w-full mt-4 bg-black text-white py-2 rounded">
+              Proceed to Checkout
+            </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -9,19 +9,9 @@ import { IoMdStar } from "react-icons/io";
 import { client } from "@/sanity/lib/client";
 import { newarrivals } from "@/sanity/lib/queries"; // Import your query for new arrivals
 import { urlFor } from "@/sanity/lib/image"; 
+import { Product } from "../../../types/products";
 
 
-type Product = {
-  _id: number;
-  name: string;
-  price: string;
-  discountPercent: number;
-  priceWithoutDiscount: string;
-  description: string;
-  rating: number;
-  imageUrl: string;
-  isnew: boolean;
-};
 
 const NewArrival = () => {
   const [product, setproduct] = useState<Product[]>([]); // State to hold fetched products
@@ -73,11 +63,8 @@ const NewArrival = () => {
       {/* Card Section */}
       <div className="w-[90%] border-b-2 border-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-auto">
         {product.slice(0, visibleProducts).map((item) => (
-          <Link href={`/testdetail/${item._id}`} key={item._id} rel="noopener">
-            <div
-              key={item._id}
-              className="bg-white rounded-lg p-2 hover:shadow-lg transition-shadow flex flex-col justify-between"
-            >
+          <Link href={`/testdetail/${item.slug.current}`} key={item._id} rel="noopener">
+            <div className="bg-white rounded-lg p-2 hover:shadow-lg transition-shadow flex flex-col justify-between">
               <div className="relative w-full h-[300px] rounded-[20px] overflow-hidden">
                 <Image
                   src={urlFor(item.imageUrl).url()}
@@ -88,54 +75,40 @@ const NewArrival = () => {
                 />
               </div>
               <h2 className="text-sm font-semibold mt-2">{item.name}</h2>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex text-yellow-500">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <IoMdStar
-                      key={index}
-                      className={`${
-                        index < Math.round(item.rating)
-                          ? "text-yellow-500"
-                          : "text-gray-300"
-                      } text-lg`}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm">{item.rating}/5</span>
-              </div>
-              <div className="mt-1 flex items-center gap-2">
-                <span className="text-lg font-bold text-gray-800">{item.price}</span>
-                {item.discountPercent && (
+             
+              <div className="mt-1 flex items-center gap-4">
+                {item.discountPercent > 0 ? (
                   <>
-                    <span className="text-sm line-through text-gray-500">
-                      {item.discountPercent} % OFF
+                   
+                    <span className="text-md line-through font-bold text-gray-600">
+                      {item.price}
                     </span>
-                  
+                    <span className="bg-pink-100 text-red-600 text-xs py-1 px-2 rounded-full">
+                      {item.discountPercent}% OFF
+                    </span>
                   </>
+                ) : (
+                  <span className="text-lg font-bold text-gray-800">{item.price}</span>
                 )}
               </div>
             </div>
           </Link>
         ))}
 
-        {/* Centered View All Button Inside Card Section */}
+        {/* Centered View More Button */}
         <div className="col-span-full flex justify-center mt-8 mb-12">
           {noMoreProducts && (
             <div className="text-center font-bold mt-10 text-[25px] text-red-600">
               No more products to show
             </div>
           )}
-
-          {/* View More Button */}
           {!noMoreProducts && (
-            <div className="flex justify-center items-center w-full mt-8 mb-12">
-              <button
-                onClick={handleViewMore}
-                className="text-lg font-medium text-black px-8 py-2 border-2 border-gray-200 hover:bg-black hover:text-white rounded-full w-[60%] sm:w-[40%] md:w-[30%] lg:w-[20%]"
-              >
-                View More Products
-              </button>
-            </div>
+            <button
+              onClick={handleViewMore}
+              className="text-lg font-medium text-black px-8 py-2 border-2 border-gray-200 hover:bg-black hover:text-white rounded-full w-[60%] sm:w-[40%] md:w-[30%] lg:w-[20%]"
+            >
+              View More Products
+            </button>
           )}
         </div>
       </div>

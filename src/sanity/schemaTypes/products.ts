@@ -11,9 +11,25 @@ export default defineType({
         type: 'string',
         },
         {
+            name: 'slug',
+            title: 'Slug',
+            type: 'slug',
+            options : {
+                source : 'name',
+                maxLength: 96,
+            
+            }
+            },
+            {
+                name: 'stock',
+                title: 'Stock',
+                type: 'number',
+                },
+        {
             name: 'rating',
             title: 'Rating',
             type: 'number',
+            validation: (Rule) => Rule.min(0).max(5), // Ensure rating is between 0 and 5
             },
         {
         name: 'price',

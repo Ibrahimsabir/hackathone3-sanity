@@ -3,6 +3,7 @@ import { groq } from "next-sanity";
 export const allproducts = groq`*[_type == "products"]{
     _id,
     name,
+    slug,
     description,
     price,
     discountPercent,
@@ -16,6 +17,7 @@ export const allproducts = groq`*[_type == "products"]{
 export const newarrivals = groq`*[_type == "products" && isnew]{
      _id,
     name,
+    slug,
     description,
     price,
     discountPercent,
@@ -30,6 +32,7 @@ export const newarrivals = groq`*[_type == "products" && isnew]{
     export const productyoulike = groq`*[_type == "products" && (discountPercent > 10)]{
         _id,
        name,
+       slug,
        description,
        price,
        discountPercent,
@@ -43,6 +46,7 @@ export const newarrivals = groq`*[_type == "products" && isnew]{
        export const topseller = groq`*[_type == "products" && rating > 4]{
         _id,
        name,
+       slug,
        description,
        price,
        discountPercent,

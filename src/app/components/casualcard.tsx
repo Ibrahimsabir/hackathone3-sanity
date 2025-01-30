@@ -7,18 +7,9 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { urlFor } from "@/sanity/lib/image";
 import { allproducts } from "@/sanity/lib/queries";
 import { client } from "@/sanity/lib/client";
+import { Product } from "../../../types/products";
 
-type Product = {
-  _id: number;
-  name: string;
-  price: string;
-  discountPercent: number;
-  priceWithoutDiscount: string;
-  description: string;
-  rating: number;
-  imageUrl: string;
-  isnew: boolean;
-};
+
 
 const CasualCard = () => {
   // Filter products based on "casual" and "formal" categories
