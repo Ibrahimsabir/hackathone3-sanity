@@ -8,7 +8,25 @@ import { urlFor } from "@/sanity/lib/image";
 import { allproducts } from "@/sanity/lib/queries";
 import { client } from "@/sanity/lib/client";
 import { Product } from "../../../types/products";
+import { addtoCart } from "../action/addtocart";
+import { FiShoppingCart } from "react-icons/fi";
+import toast from "react-hot-toast";
+import { groq } from "next-sanity";
 
+async function getProductCategory(category: string): Promise<Product | null> {
+  return client.fetch(
+    groq`*[_type == "products" && category.current == $category][0]{
+      _id,
+      name,
+      price,
+      discountPercent,
+      rating,
+      description,
+      "imageUrl": image.asset->url,
+    }`,
+    { category }
+  );
+}
 
 
 const CasualCard = () => {
@@ -57,22 +75,28 @@ const CasualCard = () => {
       setCurrentPage(currentPage - 1); // Decrement page number
     }
   };
-
+ const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+   e.preventDefault();
+   toast.success(`${product.name} added to cart`, { position: "top-center" })
+   // Add the product to the cart
+   addtoCart(product);
+   
+ }
   return (
     <div className="min-h-screen pb-12">
       {/* Title */}
       <div className="text-center mt-12 mb-4">
-        <h1 className="font-IntegralCF text-4xl font-extrabold leading-[57.6px] text-start">
-          Casual
+        <h1 className="font-IntegralCF text-4xl capitalize font-extrabold leading-[57.6px] text-start">
+        category
         </h1>
       </div>
 
       {/* Product Cards */}
       <div className="w-[90%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {currentCards.map((item) => (
-          <Link href={`/testdetail/${item._id}`} key={item._id}>
-            <div className="bg-white rounded-lg p-4 hover:scale-105 hover:shadow-xl transition-all duration-300">
-              <div className="relative w-48 h-48 rounded-md overflow-hidden">
+          <Link href={`/${item.category}/${item.slug.current}`} key={item._id}>
+            <div className="bg-white rounded-lg p-4 ">
+              <div className="relative w-48 h-48 rounded-md overflow-hidden hover:scale-105 hover:shadow-xl transition-all duration-300">
                 <Image 
                      src={urlFor(item.imageUrl).url()}
                      alt={item.name} 
@@ -80,8 +104,10 @@ const CasualCard = () => {
                      objectFit="cover" 
                      className=" rounded-md" />
               </div>
-              <h2 className="text-sm font-semibold mt-2">{item.name}</h2>
-              <div className="flex items-center gap-2 mt-1">
+     <h2 className="text-sm font-semibold mt-2">
+         {item.name.length > 20 ? item.name.slice(0, 20) + "..." : item.name}
+     </h2>              
+    <div className="flex items-center gap-2 mt-1">
                 <div className="flex text-yellow-500">
                   {Array.from({ length: 5 }).map((_, index) => (
                     <IoMdStar key={index} className={`${index < Math.round(item.rating) ? "text-yellow-500" : "text-gray-300"} text-lg`} />
@@ -89,6 +115,7 @@ const CasualCard = () => {
                 </div>
                 <span className="text-sm">{item.rating}/5</span>
               </div>
+              
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-lg font-bold text-gray-800">{item.price}</span>
                 {item.discountPercent && (
@@ -99,10 +126,21 @@ const CasualCard = () => {
                     </button>
                   </>
                 )}
+                
               </div>
+              
+              <button
+                   className=" flex gap-2 text-lg bg-gradient-to-r from-gray-300 to-gray-700 py-1 px-4 border-2 bprder-gray-500 rounded text-white font-semibold hover:scale-110 transition-transform duration-300 ease-in-out my-4 mx-auto"
+                  onClick={(e)=> handleAddToCart(e, item)}
+                  >
+                  <FiShoppingCart className="text-white text-3xl font-semibold"/>
+                  Add To Cart
+              </button>
+                     
             </div>
           </Link>
         ))}
+         
       </div>
 
       {/* Pagination Controls */}

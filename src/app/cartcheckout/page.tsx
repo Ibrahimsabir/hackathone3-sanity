@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AiFillDelete } from "react-icons/ai";
 
+
+
 export interface Product {
   _id: number;
   name: string;
@@ -33,41 +35,52 @@ export interface Product {
 }
 
 const CartPage = () => {
-  const [cart, setCart] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
+  
 
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
-      setCart(JSON.parse(storedCart));
+      setCartItems(JSON.parse(storedCart));
+    } else {
+      setCartItems([]); // Default empty array to avoid errors
     }
   }, []);
 
   const removeFromCart = (productId: number) => {
-    const updatedCart = cart.filter((item) => item._id !== productId);
-    setCart(updatedCart);
+    const updatedCart = cartItems.filter((item) => item._id !== productId);
+    setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
     toast.success("Item removed from cart");
   };
 
   const decreaseQuantity = (productId: number) => {
-    const updatedCart = cart.map((item) =>
+    const updatedCart = cartItems.map((item) =>
       item._id === productId && item.quantity > 1
         ? { ...item, quantity: item.quantity - 1 }
         : item
     );
-    setCart(updatedCart);
+    setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const increaseQuantity = (productId: number) => {
-    const updatedCart = cart.map((item) =>
-      item._id === productId && item.quantity < item.stock
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    );
-    setCart(updatedCart);
+    const updatedCart = cartItems.map((item) => {
+      if (item._id === productId) {
+        if (item.quantity < item.stock) {
+          return { ...item, quantity: item.quantity + 1 };
+        } else {
+          toast.error("Stock limit reached!", { position: "top-center" });
+        }
+      }
+      return item;
+    });
+  
+    setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
+  
+  
 
   const calculateDiscountedPrice = (price: string, discountPercent: number) => {
     const originalPrice = parseFloat(price.replace("$", ""));
@@ -75,12 +88,25 @@ const CartPage = () => {
     return `$${(originalPrice - discountAmount).toFixed(2)}`;
   };
 
-  const totalAmount = cart
-    .reduce((total, item) => {
-      const price = parseFloat(item.price.replace("$", "").replace(",", ""));
-      return total + price * item.quantity;
-    }, 0)
-    .toFixed(2);
+  const totalAmount = cartItems
+  .reduce((total, item) => {
+    if (!item.price) {
+      console.warn("Warning: Price is missing for item", item);
+      return total; // Skip this item if price is missing
+    }
+
+    const price = parseFloat(item.price.replace("$", "").replace(",", ""));
+    
+    if (isNaN(price)) {
+      console.warn("Warning: Price conversion failed for", item.price);
+      return total;
+    }
+
+    return total + price * item.quantity;
+  }, 0)
+  .toFixed(2);
+
+
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -93,11 +119,11 @@ const CartPage = () => {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Cart Items Section */}
         <div className="lg:w-2/3 border-2 border-gray-300 rounded-lg p-6">
-          {cart.length === 0 ? (
+          {cartItems.length === 0 ? (
             <p className="text-center text-gray-600">Your cart is empty.</p>
           ) : (
             <div className="flex flex-col gap-6">
-              {cart.map((item) => (
+              {cartItems.map((item) => (
                 <div
                   key={item._id}
                   className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md"
@@ -161,7 +187,7 @@ const CartPage = () => {
         {/* Cart Summary Section */}
         <div className="lg:w-1/3 border-2 border-gray-300 rounded-lg p-6">
           <h2 className="text-xl font-bold text-gray-600">Cart Summary</h2>
-          {cart.map((item) => (
+          {cartItems.map((item) => (
             <div key={item._id} className="flex justify-between items-center gap-2 my-2">
               <Image
                 src={urlFor(item.imageUrl).url()}
@@ -172,12 +198,15 @@ const CartPage = () => {
               />
               <span>{item.name} x {item.quantity}</span>
               <span>
-                ${(
-                  (item.discountPercent > 0
-                    ? parseFloat(item.price.replace("$", "")) * (1 - item.discountPercent / 100)
-                    : parseFloat(item.price.replace("$", ""))) * item.quantity
-                ).toFixed(2)}
-              </span>
+  {(
+    item.price && !isNaN(parseFloat(item.price.replace("$", "")))
+      ? (item.discountPercent > 0
+          ? parseFloat(item.price.replace("$", "")) * (1 - item.discountPercent / 100)
+          : parseFloat(item.price.replace("$", ""))) * item.quantity
+      : 0 // If price is undefined or invalid, return 0
+  ).toFixed(2)}
+</span>
+
             </div>
           ))}
           <div className="flex justify-between text-xl font-bold mt-4">

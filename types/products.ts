@@ -3,6 +3,7 @@ export interface Product {
     name: string;
     stock: number;
     price: string;
+    category: string;
     discountPercent: number;
     priceWithoutDiscount: string;
     description: string;
@@ -21,3 +22,6 @@ export interface Product {
     };
   }
   
+export interface Category {
+    params: {category : string}
+}

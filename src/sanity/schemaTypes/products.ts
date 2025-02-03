@@ -16,7 +16,7 @@ export default defineType({
             type: 'slug',
             options : {
                 source : 'name',
-                maxLength: 96,
+                maxLength: 40,
             
             }
             },
@@ -56,11 +56,15 @@ export default defineType({
             type: 'string',
             options:{
                 list:[
-                   {title: 'T-Shirt', value: 'tshirt'},
-                   {title: 'Short', value: 'short'}, 
-                   {title: 'Jeans', value: 'jeans'} ,
-                   {title: 'Hoddie', value: 'hoodie'} ,
-                   {title: 'Shirt', value: 'shirt'} ,
+                   {title: 'Casual', value: 'casual'},
+                   {title: 'Party Ware', value: 'partyware'}, 
+                   {title: 'Gym', value: 'gym'} ,
+                   {title: 'Formal', value: 'formal'} ,
+                //    {title: 'T-Shirt', value: 'tshirt'} ,
+                //    {title: 'Short', value: 'short'} ,
+                //    {title: 'Jeans', value: 'jeans'} ,
+                //    {title: 'Hoodie', value: 'hoodie'} ,
+                //    {title: 'Shirt', value: 'shirt'} ,
                 ]
             }
         },

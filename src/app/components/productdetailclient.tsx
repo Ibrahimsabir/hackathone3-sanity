@@ -44,7 +44,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     return `$${discountedPrice.toFixed(2)}`; // Format to 2 decimal places and return as a string
   };
 
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
+  const increaseQuantity = () => {
+    if (product && quantity < product.stock) {
+      setQuantity((prev) => prev + 1);
+    } else {
+      toast.error("Stock limit reached!", { position: "top-center" });
+    }
+  };
+  
   const decreaseQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   if (!product) {

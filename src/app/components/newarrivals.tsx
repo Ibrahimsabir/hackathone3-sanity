@@ -5,7 +5,6 @@ import Aos from "aos";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IoMdStar } from "react-icons/io";
 import { client } from "@/sanity/lib/client";
 import { newarrivals } from "@/sanity/lib/queries"; // Import your query for new arrivals
 import { urlFor } from "@/sanity/lib/image"; 
@@ -46,10 +45,10 @@ const NewArrival = () => {
     }
   };
 
-  // // Function to truncate text to a maximum length of 20 characters
-  // const truncateText = (text: string, maxLength: number) => {
-  //   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-  // };
+  // Function to truncate text to a maximum length of 20 characters
+  const truncateText = (text: string, maxLength: number) => {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
 
   return (
     <div id="newArrival">
@@ -74,7 +73,7 @@ const NewArrival = () => {
                   className="rounded-md"
                 />
               </div>
-              <h2 className="text-sm font-semibold mt-2">{item.name}</h2>
+              <h2 className="text-sm font-semibold mt-2">{truncateText(item.name, 20)}</h2>
              
               <div className="mt-1 flex items-center gap-4">
                 {item.discountPercent > 0 ? (

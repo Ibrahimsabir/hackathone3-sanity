@@ -15,20 +15,20 @@ const Navbar = () => {
         </h1>
 
         {/* Navigation Links */}
-        <ul className="font-Satoshi flex flex-col md:flex-row gap-4 md:gap-6 text-sm sm:text-base items-start text-left">
-  <li className="hover:border-b-2 border-gray-400">
+        <ul className="flex flex-col md:flex-row gap-4 md:gap-6 text-sm sm:text-base items-start text-left">
+  <li className="hover:scale-105 hover:text-blue-600 font-semibold border-gray-400">
     <Link href="/" className="flex items-center">
       Shop <RiArrowDropDownLine className="text-xl sm:text-2xl" />
     </Link>
   </li>
-  <li className="hover:border-b-2 border-gray-400">
-    <Link href="/contact">On Sale</Link>
+  <li className="hover:scale-105 hover:text-blue-600 font-semibold border-gray-400">
+    <Link href="/onsale">On Sale</Link>
   </li>
-  <li className="hover:border-b-2 border-gray-400">
-    <Link href="/NewArrival">New Arrival</Link>
+  <li className="hover:scale-105 hover:text-blue-600 font-semibold border-gray-400">
+    <Link href="/newarrivals">New Arrival</Link>
   </li>
-  <li className="hover:border-b-2 border-gray-400">
-    <Link href="/login" target="_blank">Brands</Link>
+  <li className="hover:scale-105 hover:text-blue-600 font-semibold border-gray-400">
+    <Link href="/topseller" target="_blank">Top Seller</Link>
   </li>
 </ul>
 
