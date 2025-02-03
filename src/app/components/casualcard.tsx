@@ -11,22 +11,23 @@ import { Product } from "../../../types/products";
 import { addtoCart } from "../action/addtocart";
 import { FiShoppingCart } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { groq } from "next-sanity";
 
-async function getProductCategory(category: string): Promise<Product | null> {
-  return client.fetch(
-    groq`*[_type == "products" && category.current == $category][0]{
-      _id,
-      name,
-      price,
-      discountPercent,
-      rating,
-      description,
-      "imageUrl": image.asset->url,
-    }`,
-    { category }
-  );
-}
+
+
+// async function getProductCategory(category: string): Promise<Product | null> {
+//   return client.fetch(
+//     groq`*[_type == "products" && category.current == $category][0]{
+//       _id,
+//       name,
+//       price,
+//       discountPercent,
+//       rating,
+//       description,
+//       "imageUrl": image.asset->url,
+//     }`,
+//     { category }
+//   );
+// }
 
 
 const CasualCard = () => {

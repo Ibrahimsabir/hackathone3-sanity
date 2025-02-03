@@ -84,7 +84,7 @@ const CategoryPage = () => {
         </div>
  {/* CasualCard */}
  <div className="w-full sm:w-[925px] max-h-[11800px] p-2">
-        <CasualCard category='category'/>
+        <CasualCard />
       </div> 
         
       </div>
