@@ -59,7 +59,7 @@ const YouMayLike = () => {
       {/* Card Section */}
       <div className="w-[90%] border-b-2 border-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-auto">
         {product.slice(0, visibleProducts).map((item) => (
-          <Link href={`/testdetail/${item.slug.current}`} key={item._id} rel="noopener">
+          <Link href={`/productdetail/${item.slug.current}`} key={item._id} rel="noopener">
             <div className="bg-white rounded-lg p-2 hover:shadow-lg transition-shadow flex flex-col justify-between">
               <div className="relative w-full h-[300px] rounded-[20px] overflow-hidden">
                 <Image
