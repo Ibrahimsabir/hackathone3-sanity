@@ -110,7 +110,7 @@ const CartPage = () => {
     const price = parseFloat(item.price.replace("$", "").replace(",", ""));
     
     if (isNaN(price)) {
-      console.warn("Warning: Price conversion failed for", item.price);
+      Swal.fire("Warning: Price conversion failed for", item.price);
       return total;
     }
 

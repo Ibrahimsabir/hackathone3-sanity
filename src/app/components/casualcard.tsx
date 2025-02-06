@@ -7,10 +7,34 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { urlFor } from "@/sanity/lib/image";
 import { allproducts } from "@/sanity/lib/queries";
 import { client } from "@/sanity/lib/client";
-import { Product } from "../../../types/products";
-import { addtoCart } from "../action/addtocart";
+import { addToCart } from "../action/addtocart";
 import toast from "react-hot-toast";
 
+export interface Product {
+  _id: number;
+  name: string;
+  stock: number;
+  price: string;
+  discountPercent: number;
+  priceWithoutDiscount: string;
+  description: string;
+  rating: number;
+  imageUrl: {
+    _type: "image";
+    asset: {
+      _ref: string;
+      _type: "reference";
+    };
+  };
+  isnew: boolean;
+  slug: {
+    _type: "slug";
+    current: string;
+  };
+  category: string;
+  color: string;
+  quantity: number;
+}
 
 
 // async function getProductCategory(category: string): Promise<Product | null> {
@@ -80,7 +104,7 @@ const CasualCard = () => {
 
    toast.success('product added to cart', { position: "top-center" , duration: 1000 }, )
    // Add the product to the cart
-   addtoCart(product);
+   addToCart(product);
    console.log(handleAddToCart)
   //  alert('ok')
    

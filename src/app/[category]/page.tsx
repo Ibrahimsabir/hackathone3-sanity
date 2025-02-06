@@ -1,33 +1,33 @@
 import React from 'react';
 import { CategoryTop } from '../components/categorytop';
 import CasualCard from '../components/casualcard';
-import { client } from '@/sanity/lib/client';
-import { Product } from '../../../types/products';
-import { groq } from 'next-sanity';
+// import { client } from '@/sanity/lib/client';
+// import { Product } from '../../../types/products';
+// import { groq } from 'next-sanity';
 
-interface ProductCategoryPageProps {
-  params: { category: string };
-}
+// interface ProductCategoryPageProps {
+//   params: { category: string };
+// }
 
-async function getProductCategory( category: string): Promise<Product | null> {
-  return client.fetch(
-    groq`*[_type == "products" && category.current == $category][0]{
-      _id,
-      name,
-      price,
-      discountPercent,
-      rating,
-      description,
-      "imageUrl": image.asset->url,
-    }`,
-    { category }
-  );
-}
+// async function getProductCategory( category: string): Promise<Product | null> {
+//   return client.fetch(
+//     groq`*[_type == "products" && category.current == $category][0]{
+//       _id,
+//       name,
+//       price,
+//       discountPercent,
+//       rating,
+//       description,
+//       "imageUrl": image.asset->url,
+//     }`,
+//     { category }
+//   );
+// }
 
-export default async function CategoryPage({ params }: ProductCategoryPageProps) {
+export default async function CategoryPage() {
 
-  const { category } = params;
-  const product = await getProductCategory(category);
+  // const { category } = params;
+  // const product = await getProductCategory(category);
 
   return (
     <div className="max-w-[1440px] max-h-full flex-grow justify-start items-center mb-0">
