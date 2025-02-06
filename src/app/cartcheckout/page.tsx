@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AiFillDelete } from "react-icons/ai";
+import Swal from "sweetalert2";
 
 
 
@@ -48,12 +49,23 @@ const CartPage = () => {
   }, []);
 
   const removeFromCart = (productId: number) => {
+    const confirmed = window.confirm("Are you sure you want to remove this item from your cart?");
+    if (!confirmed) return;
+  
     const updatedCart = cartItems.filter((item) => item._id !== productId);
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
-    toast.success("Item removed from cart");
+  
+    toast.success("Item removed from cart", {
+      icon: "✅",
+     
+      
+    });
+    toast.error("Item has been deleted!", {
+      icon: "🗑️",
+    });
   };
-
+  
   const decreaseQuantity = (productId: number) => {
     const updatedCart = cartItems.map((item) =>
       item._id === productId && item.quantity > 1
@@ -120,7 +132,9 @@ const CartPage = () => {
         {/* Cart Items Section */}
         <div className="lg:w-2/3 border-2 border-gray-300 rounded-lg p-6">
           {cartItems.length === 0 ? (
+            <>
             <p className="text-center text-gray-600">Your cart is empty.</p>
+            </>
           ) : (
             <div className="flex flex-col gap-6">
               {cartItems.map((item) => (
@@ -213,7 +227,7 @@ const CartPage = () => {
             <span>Total:</span>
             <span>${totalAmount}</span>
           </div>
-          <Link href="/checkoutpage">
+          <Link href="/checkout">
             <button className="w-full mt-4 bg-black text-white py-2 rounded">
               Proceed to Checkout
             </button>

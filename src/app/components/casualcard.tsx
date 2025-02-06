@@ -9,7 +9,6 @@ import { allproducts } from "@/sanity/lib/queries";
 import { client } from "@/sanity/lib/client";
 import { Product } from "../../../types/products";
 import { addtoCart } from "../action/addtocart";
-import { FiShoppingCart } from "react-icons/fi";
 import toast from "react-hot-toast";
 
 
@@ -78,9 +77,12 @@ const CasualCard = () => {
   };
  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
    e.preventDefault();
-   toast.success(`${product.name} added to cart`, { position: "top-center" })
+
+   toast.success('product added to cart', { position: "top-center" , duration: 1000 }, )
    // Add the product to the cart
    addtoCart(product);
+   console.log(handleAddToCart)
+  //  alert('ok')
    
  }
   return (
@@ -94,36 +96,36 @@ const CasualCard = () => {
 
       {/* Product Cards */}
       <div className="w-[90%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-        {currentCards.map((item) => (
-          <Link href={`/${item.category}/${item.slug.current}`} key={item._id}>
+        {currentCards.map((product) => (
+          <Link href={`/${product.category}/${product.slug.current}`} key={product._id}>
             <div className="bg-white rounded-lg p-4 ">
               <div className="relative w-48 h-48 rounded-md overflow-hidden hover:scale-105 hover:shadow-xl transition-all duration-300">
                 <Image 
-                     src={urlFor(item.imageUrl).url()}
-                     alt={item.name} 
+                     src={urlFor(product.imageUrl).url()}
+                     alt={product.name} 
                      layout="fill" 
                      objectFit="cover" 
                      className=" rounded-md" />
               </div>
      <h2 className="text-sm font-semibold mt-2">
-         {item.name.length > 20 ? item.name.slice(0, 20) + "..." : item.name}
+         {product.name.length > 20 ? product.name.slice(0, 20) + "..." : product.name}
      </h2>              
-    <div className="flex items-center gap-2 mt-1">
+    <div className="flex products-center gap-2 mt-1">
                 <div className="flex text-yellow-500">
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <IoMdStar key={index} className={`${index < Math.round(item.rating) ? "text-yellow-500" : "text-gray-300"} text-lg`} />
+                    <IoMdStar key={index} className={`${index < Math.round(product.rating) ? "text-yellow-500" : "text-gray-300"} text-lg`} />
                   ))}
                 </div>
-                <span className="text-sm">{item.rating}/5</span>
+                <span className="text-sm">{product.rating}/5</span>
               </div>
               
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-lg font-bold text-gray-800">{item.price}</span>
-                {item.discountPercent && (
+              <div className="mt-2 flex products-center gap-2">
+                <span className="text-lg font-bold text-gray-800">{product.price}</span>
+                {product.discountPercent && (
                   <>
-                    <span className="text-sm line-through text-gray-500">{item.price}</span>
+                    <span className="text-sm line-through text-gray-500">{product.price}</span>
                     <button className="bg-pink-100 text-red-600 text-xs py-1 px-2 rounded-full">
-                      {calculateDiscount(item.price, item.price)}% OFF
+                      {calculateDiscount(product.price, product.price)}% OFF
                     </button>
                   </>
                 )}
@@ -131,10 +133,10 @@ const CasualCard = () => {
               </div>
               
               <button
-                   className=" flex gap-2 text-lg bg-gradient-to-r from-gray-300 to-gray-700 py-1 px-4 border-2 bprder-gray-500 rounded text-white font-semibold hover:scale-110 transition-transform duration-300 ease-in-out my-4 mx-auto"
-                  onClick={(e)=> handleAddToCart(e, item)}
+                   className=" flex gap-2 text-lg bg-gradient-to-r from-gray-300 to-gray-700 py-1 px-4 border-2 bprder-gray-500 rounded-lg text-white font-semibold hover:scale-105 transition-transform duration-300 ease-in-out my-4 mx-auto"
+                  onClick={(e)=> handleAddToCart(e, product)}
                   >
-                  <FiShoppingCart className="text-white text-3xl font-semibold"/>
+                  
                   Add To Cart
               </button>
                      
@@ -145,19 +147,19 @@ const CasualCard = () => {
       </div>
 
       {/* Pagination Controls */}
-      <div className="col-span-full border-y-2 border-gray-200 flex justify-center sm:justify-between items-center py-6 px-12 mt-8 mb-36 flex-wrap">
+      <div className="col-span-full border-y-2 border-gray-200 flex justify-center sm:justify-between products-center py-6 px-12 mt-8 mb-36 flex-wrap">
         {/* Previous Button */}
         <button
           onClick={goToPreviousPage}
           disabled={currentPage === 1}
-          className={`flex gap-4 justify-center items-center text-lg sm:text-xl font-Satoshi font-medium text-black px-8 sm:px-16 py-2 border-2 border-gray-200 rounded-xl ${currentPage === 1 ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:bg-black hover:text-white"}`}
+          className={`flex gap-4 justify-center products-center text-lg sm:text-xl font-Satoshi font-medium text-black px-8 sm:px-16 py-2 border-2 border-gray-200 rounded-xl ${currentPage === 1 ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:bg-black hover:text-white"}`}
         >
           <FaArrowLeft />
           Previous
         </button>
 
         {/* Page Number Display */}
-        <div className="flex items-center justify-center text-lg sm:text-xl">
+        <div className="flex products-center justify-center text-lg sm:text-xl">
           Page {currentPage} of {totalPages}
         </div>
 
@@ -165,7 +167,7 @@ const CasualCard = () => {
         <button
           onClick={goToNextPage}
           disabled={currentPage === totalPages}
-          className={`flex gap-4 justify-center items-center text-lg sm:text-xl font-Satoshi font-medium text-black px-8 sm:px-16 py-2 border-2 border-gray-200 rounded-xl ${currentPage === totalPages ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:bg-black hover:text-white"}`}
+          className={`flex gap-4 justify-center products-center text-lg sm:text-xl font-Satoshi font-medium text-black px-8 sm:px-16 py-2 border-2 border-gray-200 rounded-xl ${currentPage === totalPages ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:bg-black hover:text-white"}`}
         >
           Next
           <FaArrowRight />

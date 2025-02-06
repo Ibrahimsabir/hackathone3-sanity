@@ -1,8 +1,34 @@
 import React from 'react';
 import { CategoryTop } from '../components/categorytop';
 import CasualCard from '../components/casualcard';
+import { client } from '@/sanity/lib/client';
+import { Product } from '../../../types/products';
+import { groq } from 'next-sanity';
 
-const CategoryPage = () => {
+interface ProductCategoryPageProps {
+  params: { category: string };
+}
+
+async function getProductCategory( category: string): Promise<Product | null> {
+  return client.fetch(
+    groq`*[_type == "products" && category.current == $category][0]{
+      _id,
+      name,
+      price,
+      discountPercent,
+      rating,
+      description,
+      "imageUrl": image.asset->url,
+    }`,
+    { category }
+  );
+}
+
+export default async function CategoryPage({ params }: ProductCategoryPageProps) {
+
+  const { category } = params;
+  const product = await getProductCategory(category);
+
   return (
     <div className="max-w-[1440px] max-h-full flex-grow justify-start items-center mb-0">
       <CategoryTop />
@@ -17,7 +43,7 @@ const CategoryPage = () => {
           <div className="mb-4">
             <h3 className="font-semibold mb-2">Category</h3>
             <ul className="space-y-2">
-              {["T-Shirts", "Shorts", "Jeans", "Hoodies"].map((category) => (
+              {["", "", "Jeans", "Hoodies"].map((category) => (
                 <li key={category}>
                   <input type="checkbox" id={category.toLowerCase()} className="mr-2" />
                   <label htmlFor={category.toLowerCase()}>{category}</label>
@@ -94,4 +120,3 @@ const CategoryPage = () => {
   );
 }
 
-export default CategoryPage;
