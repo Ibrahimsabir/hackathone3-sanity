@@ -24,7 +24,7 @@ import CasualCard from '../components/casualcard';
 //   );
 // }
 
-export default async function CategoryPage() {
+export default async function CategoryPage({ params }: { params: { category: string } }) {
 
   // const { category } = params;
   // const product = await getProductCategory(category);
@@ -43,7 +43,7 @@ export default async function CategoryPage() {
           <div className="mb-4">
             <h3 className="font-semibold mb-2">Category</h3>
             <ul className="space-y-2">
-              {["", "", "Jeans", "Hoodies"].map((category) => (
+              {["Casual", "Formal", "Party", "Gym"].map((category) => (
                 <li key={category}>
                   <input type="checkbox" id={category.toLowerCase()} className="mr-2" />
                   <label htmlFor={category.toLowerCase()}>{category}</label>
@@ -110,7 +110,7 @@ export default async function CategoryPage() {
         </div>
  {/* CasualCard */}
  <div className="w-full sm:w-[925px] max-h-[11800px] p-2">
-        <CasualCard />
+        <CasualCard params={params}/>
       </div> 
         
       </div>

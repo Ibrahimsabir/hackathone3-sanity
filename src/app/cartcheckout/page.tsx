@@ -26,7 +26,7 @@ export interface Product {
     };
   };
   isnew: boolean;
-  slug: {
+  slug: {          
     _type: "slug";
     current: string;
   };

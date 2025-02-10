@@ -53,7 +53,7 @@ export interface Product {
 // }
 
 
-const CasualCard = () => {
+const CasualCard = ({params}: {params: {category :string}}) => {
   // Filter products based on "casual" and "formal" categories
   const [product,setproduct] = useState<Product[]>([]);
 
@@ -114,7 +114,7 @@ const CasualCard = () => {
       {/* Title */}
       <div className="text-center mt-12 mb-4">
         <h1 className="font-IntegralCF text-4xl capitalize font-extrabold leading-[57.6px] text-start">
-        category
+        {params.category}       
         </h1>
       </div>
 
