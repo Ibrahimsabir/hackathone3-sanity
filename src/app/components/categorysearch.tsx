@@ -2,7 +2,7 @@ import React from 'react';
 import { CategoryTop } from '../components/categorytop';
 import CasualCard from '../components/casualcard';
 
-const CategoryPage = () => {
+const CategoryPage = ({ params }: { params: { category: string } }) => {
   return (
     <div className="max-w-[1440px] max-h-full flex-grow justify-start items-center mb-0">
       <CategoryTop />
@@ -84,7 +84,7 @@ const CategoryPage = () => {
         </div>
  {/* CasualCard */}
  <div className="w-full sm:w-[925px] max-h-[11800px] p-2">
-        <CasualCard />
+        <CasualCard params={params}/>
       </div> 
         
       </div>
