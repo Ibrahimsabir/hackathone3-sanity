@@ -17,7 +17,7 @@ const CategoryPage = ({ params }: { params: { category: string } }) => {
           <div className="mb-4">
             <h3 className="font-semibold mb-2">Category</h3>
             <ul className="space-y-2">
-              {["T-Shirts", "Shorts", "Jeans", "Hoodies"].map((category) => (
+              {["Casual", "Formal", "Party", "Gym"].map((category) => (
                 <li key={category}>
                   <input type="checkbox" id={category.toLowerCase()} className="mr-2" />
                   <label htmlFor={category.toLowerCase()}>{category}</label>
